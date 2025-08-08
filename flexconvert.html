@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FlexConvert - Convertisseur Audio vers Vidéo Lyrics</title>
+    <link rel="stylesheet" href="flexconvert.css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <div class="logo">
+          <i class="fas fa-music"></i>
+          <h1>FlexConvert</h1>
+          <span class="tagline">Audio vers Vidéo Lyrics</span>
+        </div>
+        <div class="header-controls">
+          <div class="connection-status" id="connectionStatus">
+            <i class="fas fa-wifi"></i>
+            <span>Connecté</span>
+          </div>
+          <button
+            class="theme-toggle"
+            id="themeToggle"
+            title="Basculer le thème"
+          >
+            <i class="fas fa-moon"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Upload Section -->
+      <section class="upload-section" id="uploadSection">
+        <div class="upload-area" id="uploadArea">
+          <div class="upload-icon">
+            <i class="fas fa-cloud-upload-alt"></i>
+          </div>
+          <h2>Sélectionnez un fichier audio</h2>
+          <p>
+            Glissez-déposez votre fichier audio ici ou cliquez pour parcourir
+          </p>
+          <div class="supported-formats">
+            <span style="color: white"
+              >Formats supportés: MP3, WAV, AAC, FLAC, OGG</span
+            >
+          </div>
+          <input
+            type="file"
+            id="audioFileInput"
+            accept=".mp3,.wav,.aac,.flac,.ogg"
+            hidden
+          />
+          <button class="browse-btn" id="browseBtn">
+            <i class="fas fa-folder-open"></i>
+            Parcourir les fichiers
+          </button>
+        </div>
+      </section>
+
+      <!-- File Info Section -->
+      <section class="file-info-section hidden" id="fileInfoSection">
+        <div class="file-info">
+          <div class="file-icon">
+            <i class="fas fa-file-audio"></i>
+          </div>
+          <div class="file-details">
+            <h3 id="fileName">nom_fichier.mp3</h3>
+            <div class="file-meta">
+              <span id="fileSize">2.5 MB</span>
+              <span class="separator">•</span>
+              <span id="fileDuration">3:42</span>
+              <span class="separator">•</span>
+              <span id="fileFormat">MP3</span>
+            </div>
+          </div>
+          <div class="file-actions">
+            <button class="btn-secondary" id="changeFileBtn">
+              <i class="fas fa-exchange-alt"></i>
+              Changer autre audio
+            </button>
+            <button
+              onclick="uploadAndConvert()"
+              class="btn-primary"
+              id="startConversionBtn"
+            >
+              <i class="fas fa-play"></i>
+              Convertir
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Conversion Progress Section -->
+      <section class="conversion-section hidden" id="conversionSection">
+        <div class="conversion-container">
+          <div class="conversion-header">
+            <h2>Conversion en cours...</h2>
+            <div class="conversion-status">
+              <span id="conversionStage">Analyse audio...</span>
+            </div>
+          </div>
+
+          <div class="progress-container">
+            <div class="progress-bar">
+              <div class="progress-fill" id="progressFill"></div>
+              <div class="progress-text">
+                <span id="progressPercent">0%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="conversion-steps">
+            <div class="step active" id="step1">
+              <div class="step-icon">
+                <i class="fas fa-file-audio"></i>
+              </div>
+              <span>Analyse audio</span>
+            </div>
+            <div class="step" id="step2">
+              <div class="step-icon">
+                <i class="fas fa-comments"></i>
+              </div>
+              <span>Transcription STT</span>
+            </div>
+            <div class="step" id="step3">
+              <div class="step-icon">
+                <i class="fas fa-text-height"></i>
+              </div>
+              <span>Génération paroles</span>
+            </div>
+            <div class="step" id="step4">
+              <div class="step-icon">
+                <i class="fas fa-video"></i>
+              </div>
+              <span>Création vidéo</span>
+            </div>
+          </div>
+
+          <div class="conversion-details">
+            <div class="detail-item">
+              <span class="label">Temps écoulé:</span>
+              <span class="value" id="elapsedTime">00:00</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Temps restant:</span>
+              <span class="value" id="remainingTime">--:--</span>
+            </div>
+          </div>
+
+          <button class="btn-danger" id="cancelConversionBtn">
+            <i class="fas fa-stop"></i>
+            Annuler
+          </button>
+        </div>
+      </section>
+
+      <!-- Result Section -->
+      <section class="result-section hidden" id="resultSection">
+        <div class="result-container">
+          <div class="result-header">
+            <div class="success-icon">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <h2>Conversion terminée avec succès!</h2>
+            <p>Votre vidéo lyrics est prête</p>
+          </div>
+
+          <div class="result-preview">
+            <div class="video-thumbnail">
+              <i class="fas fa-play-circle"></i>
+              <span class="duration" id="videoDuration">3:42</span>
+            </div>
+            <div class="video-details">
+              <h3 id="videoFileName">ma_chanson_lyrics.mp4</h3>
+              <div class="video-meta">
+                <span id="videoSize">15.2 MB</span>
+                <span class="separator">•</span>
+                <span>1920x1080</span>
+                <span class="separator">•</span>
+                <span>MP4</span>
+              </div>
+              <div class="lyrics-info">
+                <i class="fas fa-quote-left"></i>
+                <span id="lyricsCount">142 mots transcrits</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="result-actions">
+            <button class="btn-secondary" id="previewBtn">
+              <i class="fas fa-eye"></i>
+              Aperçu
+            </button>
+            <button class="btn-primary" id="downloadBtn">
+              <i class="fas fa-download"></i>
+              Télécharger
+              <div class="download-spinner hidden" id="downloadSpinner">
+                <div class="spinner"></div>
+                <span id="downloadProgress">0%</span>
+              </div>
+            </button>
+            <button class="btn-secondary" id="saveToFolderBtn">
+              <i class="fas fa-folder-open"></i>
+              Choisir dossier
+            </button>
+          </div>
+
+          <div class="new-conversion">
+            <button class="btn-outline" id="newConversionBtn">
+              <i class="fas fa-plus"></i>
+              Nouvelle conversion
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Settings Panel -->
+      <div class="settings-panel hidden" id="settingsPanel">
+        <div class="settings-header">
+          <h3>Paramètres de conversion</h3>
+          <button class="close-settings" id="closeSettings">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="settings-content">
+          <div class="setting-group">
+            <label>Qualité vidéo</label>
+            <select id="videoQuality">
+              <option value="720p">HD (720p)</option>
+              <option value="1080p" selected>Full HD (1080p)</option>
+              <option value="4k">4K (2160p)</option>
+            </select>
+          </div>
+          <div class="setting-group">
+            <label>Style des paroles</label>
+            <select id="lyricsStyle">
+              <option value="modern" selected>Moderne</option>
+              <option value="classic">Classique</option>
+              <option value="neon">Néon</option>
+              <option value="minimal">Minimal</option>
+            </select>
+          </div>
+          <div class="setting-group">
+            <label>Langue de transcription</label>
+            <select id="transcriptionLanguage">
+              <option value="fr" selected>Français</option>
+              <option value="en">Anglais</option>
+              <option value="es">Espagnol</option>
+              <option value="de">Allemand</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Decorative Elements -->
+      <div class="decorative-elements">
+        <div class="floating-icon" style="top: 20%; left: 10%">
+          <i class="fas fa-music"></i>
+        </div>
+        <div class="floating-icon" style="top: 60%; right: 15%">
+          <i class="fas fa-video"></i>
+        </div>
+        <div class="floating-icon" style="bottom: 20%; left: 20%">
+          <i class="fas fa-microphone"></i>
+        </div>
+        <div class="wave-animation">
+          <div class="wave"></div>
+          <div class="wave"></div>
+          <div class="wave"></div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <p>
+          &copy; 2025 FlexConvert. Application de conversion audio vers vidéo
+          lyrics.
+        </p>
+        <div class="footer-links">
+          <button class="footer-btn" id="settingsBtn">
+            <i class="fas fa-cog"></i>
+            Paramètres
+          </button>
+          <button class="footer-btn" id="aboutBtn">
+            <i class="fas fa-info-circle"></i>
+            À propos
+          </button>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Notification Container -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <!-- Modal for Preview -->
+    <div class="modal hidden" id="previewModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Aperçu de la vidéo</h3>
+          <button class="modal-close" id="closePreview">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <video controls id="previewVideo">
+            <source src="" type="video/mp4" />
+            Votre navigateur ne supporte pas la lecture vidéo.
+          </video>
+        </div>
+      </div>
+    </div>
+
+    <script src="flexconvert.js"></script>
+  </body>
+</html>
